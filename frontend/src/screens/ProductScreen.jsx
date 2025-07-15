@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import products from "../products";
+import Message from "../components/Message.jsx";
 import {
   Col,
   Row,
@@ -11,9 +11,20 @@ import {
   ListGroupItem,
 } from "react-bootstrap";
 import Rating from "../components/Rating";
+import { useGetProductQuery } from "../slices/productsApiSlice";
+import Loader from "../components/Loader";
 const ProductScreen = () => {
   const { id: productId } = useParams();
-  const product = products.find((p) => p._id === productId);
+  const { data: product, isLoading, error } = useGetProductQuery(productId);
+
+  if (isLoading) return <Loader />;
+  if (error)
+    return (
+      <Message variant="danger">
+        Error loading product: {error?.data?.message || "Unknown error"}
+      </Message>
+    );
+  if (!product) return <p>Product not found</p>;
 
   return (
     <div className="d-flex flex-column gap-4">
@@ -23,7 +34,7 @@ const ProductScreen = () => {
 
       <Row>
         <Col md={5}>
-          <Image src={product.image} fluid />
+          <Image src={product.image} fluid alt="productimage" />
         </Col>
         <Col md={4}>
           <ListGroup variant="flush">
