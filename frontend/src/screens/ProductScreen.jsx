@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Message from "../components/Message.jsx";
 import {
+  Form,
   Col,
   Row,
   Image,
@@ -13,9 +14,16 @@ import {
 import Rating from "../components/Rating";
 import { useGetProductQuery } from "../slices/productsApiSlice";
 import Loader from "../components/Loader";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../slices/cartSlice.js";
 const ProductScreen = () => {
   const { id: productId } = useParams();
   const { data: product, isLoading, error } = useGetProductQuery(productId);
+  const [qty, setQty] = useState(1);
+  const cart = useSelector((state) => state.cart);
+  console.log("check the cart", cart);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   if (isLoading) return <Loader />;
   if (error)
@@ -77,6 +85,27 @@ const ProductScreen = () => {
                   </Col>
                 </Row>
               </ListGroupItem>
+              <ListGroupItem>
+                <Row>
+                  <Col>Qty:</Col>
+
+                  <Col>
+                    {product.qty > 0 && (
+                      <Form.Control
+                        value={qty}
+                        as="select"
+                        onChange={(e) => setQty(e.target.value)}
+                      >
+                        {[...Array(product.countInStock).keys()].map((x) => (
+                          <option key={x + 1} value={x + 1}>
+                            {x + 1}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    )}
+                  </Col>
+                </Row>
+              </ListGroupItem>
 
               <ListGroupItem>
                 <Button
@@ -87,6 +116,10 @@ const ProductScreen = () => {
                   }`}
                   type="button"
                   disabled={product.countInStock === 0}
+                  onClick={() => {
+                    dispatch(addToCart({ ...product, qty }));
+                    navigate("/cart");
+                  }}
                 >
                   Add To Cart
                 </Button>

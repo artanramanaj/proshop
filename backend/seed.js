@@ -23,12 +23,8 @@ const importData = async () => {
       ...product,
       user: adminUser,
     }));
-
-    console.log("check sample", sampleProducts);
-
     await Product.insertMany(sampleProducts);
 
-    console.log(" Data Imported Successfully");
     process.exit();
   } catch (error) {
     console.error("Import Failed:", error);
