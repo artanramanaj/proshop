@@ -158,7 +158,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
 export const updateUser = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
   const { name, email, password } = req.body;
-  const emailexist = await User.find({ email });
+  const emailexist = await User.findOne({ email, _id: { $ne: userId } });
   console.log("email exist", emailexist);
   if (emailexist) {
     res.status(400);
