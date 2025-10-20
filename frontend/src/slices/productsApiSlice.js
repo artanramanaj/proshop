@@ -1,7 +1,6 @@
 import { apiSlice } from "./apiSlice";
 import { PRODUCTS_URL } from "../constants";
 
-console.log("check the type of ", apiSlice);
 const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getProducts: build.query({

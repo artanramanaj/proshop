@@ -21,7 +21,6 @@ const ProductScreen = () => {
   const { data: product, isLoading, error } = useGetProductQuery(productId);
   const [qty, setQty] = useState(1);
   const cart = useSelector((state) => state.cart);
-  console.log("check the cart", cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

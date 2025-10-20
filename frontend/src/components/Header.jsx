@@ -1,18 +1,37 @@
-import React from "react";
-import { Badge, Navbar, Nav, Container, NavbarBrand } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Badge, Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
-import { useSelector } from "react-redux";
-
-import { Link } from "react-router-dom";
+import { useLogoutMutation } from "../slices/usersApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setCredentials } from "../slices/authSlice";
+import {
+  Link,
+  useLocation,
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
 const Header = () => {
   const cartStore = useSelector((state) => state.cart);
-  console.log("check the test", cartStore.cartItems);
-
+  const user = JSON.parse(localStorage.getItem("userInfo"));
+  console.log("check the useer", user);
   const quantiyResultBadge = cartStore.cartItems.reduce(
     (acc, currentItems) => acc + Number(currentItems.qty),
     0
   );
+  const navigate = useNavigate();
+  const [logout, { isLoading }] = useLogoutMutation();
+  const dispatch = useDispatch();
+
+  const logoutFunc = async () => {
+    try {
+      await logout().unwrap();
+      dispatch(setCredentials(null));
+    } catch (error) {
+      console.log("check the error", error);
+    }
+  };
+
   return (
     <header>
       <Navbar bg="dark" variant="dark" expand="md" collapseOnSelect>
@@ -31,9 +50,26 @@ const Header = () => {
                   </Badge>
                 )}
               </Nav.Link>
-              <Nav.Link as={Link} to="/login">
-                <FaUser /> Sign In
-              </Nav.Link>
+              {!user ? (
+                <Nav.Link as={Link} to="/login">
+                  <FaUser /> Sign In
+                </Nav.Link>
+              ) : (
+                <NavDropdown
+                  title={user.name || "Account"}
+                  id="username"
+                  menuVariant="dark"
+                  menustyle={{ backgroundColor: "#212529" }}
+                >
+                  <NavDropdown.Item as={Link} to="/profile">
+                    Profile
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={logoutFunc}>
+                    Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>

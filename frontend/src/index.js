@@ -14,8 +14,14 @@ import HomeScreen from "./screens/HomeScreen";
 import ProductScreen from "./screens/ProductScreen";
 import CartScreen from "./screens/cartScreen";
 import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
 import { Provider } from "react-redux";
 import store from "./store/store";
+import PrivateRoute from "./components/PrivateRoute";
+import ShippingScreen from "./screens/ShippingScreen";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -23,6 +29,11 @@ const router = createBrowserRouter(
       <Route path="/product/:id" element={<ProductScreen />} />
       <Route path="/cart" element={<CartScreen />} />
       <Route path="/login" element={<LoginScreen />} />
+      <Route path="/register" element={<RegisterScreen />} />
+
+      <Route element={<PrivateRoute />}>
+        <Route path="shipping" element={<ShippingScreen />} />
+      </Route>
     </Route>
   )
 );
@@ -33,6 +44,16 @@ root.render(
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      pauseOnHover
+      draggable
+      theme="colored"
+    />
   </React.StrictMode>
 );
 
