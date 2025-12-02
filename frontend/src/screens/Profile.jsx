@@ -1,12 +1,4 @@
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  ListGroup,
-  Image,
-  Card,
-} from "react-bootstrap";
+import { Form, Button, Row, Col, Card, Table, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
 import FormContainer from "../components/FormContainer";
 import { useUpdateProfileMutation } from "../slices/usersApiSlice";
@@ -15,6 +7,8 @@ import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import { useNavigate } from "react-router-dom";
+import { useGetMyOrdersQuery } from "../slices/ordersApiSlice";
 const Profile = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   console.log("userInfo", userInfo);
@@ -23,7 +17,17 @@ const Profile = () => {
   const [password, setPassword] = useState(null);
   const [confirmpassword, setConfrimPassword] = useState(null);
   const [updateProfile, { isLoading, error }] = useUpdateProfileMutation();
+
+  const {
+    data: mineOrders,
+    isLoading: mineIsLoading,
+    error: mineError,
+  } = useGetMyOrdersQuery();
+
+  console.log("mineOrders", mineOrders);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const passwordsMatch = useMemo(() => {
     return password && confirmpassword && password === confirmpassword;
   }, [password, confirmpassword]);
@@ -41,8 +45,13 @@ const Profile = () => {
       toast.error(error?.data?.message);
     }
   };
+  const handleDetails = (id) => {
+    navigate(`/order/${id}`);
+  };
   if (isLoading) return <Loader />;
+  if (mineIsLoading) return <Loader />;
   if (error) return <Message variant="danger">{error}</Message>;
+  if (mineError) return <Message variant="danger">{mineError}</Message>;
   return (
     <>
       <Row>
@@ -104,7 +113,55 @@ const Profile = () => {
           </FormContainer>
         </Col>
 
-        <Col md={6}>ORDERS</Col>
+        <Col md={6}>
+          <div className="container mt-4">
+            <h2>My Orders</h2>
+            <Table responsive striped bordered hover>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Paid</th>
+                  <th>Delivered</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mineOrders.map((order) => (
+                  <tr key={order._id}>
+                    <td>{order._id}</td>
+                    <td>{order.createdAt.split("T")[0]}</td>
+                    <td>${order.totalPrice}</td>
+                    <td>
+                      {order.isPaid ? (
+                        <Badge bg="success">✓</Badge>
+                      ) : (
+                        <Badge bg="danger">✗</Badge>
+                      )}
+                    </td>
+                    <td>
+                      {order.isDeliverd ? (
+                        <Badge bg="success">✓</Badge>
+                      ) : (
+                        <Badge bg="danger">✗</Badge>
+                      )}
+                    </td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleDetails(order._id)}
+                      >
+                        Details
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </Col>
       </Row>
     </>
   );
