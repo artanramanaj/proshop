@@ -114,6 +114,7 @@ const CartScreen = () => {
                 type="button"
                 className="btn-block"
                 disabled={cartItems.length === 0}
+                onClick={() => navigate("/shipping")}
               >
                 Proceed to checkout
               </Button>

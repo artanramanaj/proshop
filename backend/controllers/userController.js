@@ -94,13 +94,15 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error("Email already exists");
   }
 
+  const updatedFields = { name, email };
+
+  if (password) {
+    updatedFields.password = await encryptPassword(password);
+  }
+
   const updatedUser = await User.findOneAndUpdate(
     { _id: user._id },
-    {
-      name,
-      email,
-      password: await encryptPassword(password),
-    },
+    updatedFields,
     { new: true }
   );
 
@@ -111,7 +113,14 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     message: "Profile updated successfully",
-    user: updatedUser,
+    user: {
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    },
   });
 });
 

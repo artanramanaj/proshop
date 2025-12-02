@@ -13,8 +13,9 @@ import {
 } from "react-router-dom";
 const Header = () => {
   const cartStore = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.auth);
   const user = JSON.parse(localStorage.getItem("userInfo"));
-  console.log("check the useer", user);
+
   const quantiyResultBadge = cartStore.cartItems.reduce(
     (acc, currentItems) => acc + Number(currentItems.qty),
     0
@@ -27,6 +28,7 @@ const Header = () => {
     try {
       await logout().unwrap();
       dispatch(setCredentials(null));
+      navigate("/login");
     } catch (error) {
       console.log("check the error", error);
     }
@@ -56,7 +58,7 @@ const Header = () => {
                 </Nav.Link>
               ) : (
                 <NavDropdown
-                  title={user.name || "Account"}
+                  title={userInfo.name || "Account"}
                   id="username"
                   menuVariant="dark"
                   menustyle={{ backgroundColor: "#212529" }}
