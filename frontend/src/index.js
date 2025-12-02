@@ -22,10 +22,12 @@ import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import ShippingScreen from "./screens/ShippingScreen";
 import { ToastContainer } from "react-toastify";
 import PaymentScreen from "./screens/PaymentScreen";
-import Order from "./screens/Order";
-
+import AdminRoute from "./components/AdminRoute";
+import OrderScreen from "./screens/OrderScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import OrderListScreen from "./screens/admin/OrderListScreen";
+import ProductListScreen from "./screens/admin/ProductListScreen";
 import "react-toastify/dist/ReactToastify.css";
-import Profile from "./screens/Profile";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -40,8 +42,13 @@ const router = createBrowserRouter(
         <Route path="/shipping" element={<ShippingScreen />} />
         <Route path="/payment" element={<PaymentScreen />} />
         <Route path="/placeorder" element={<PlaceOrderScreen />} />
-        <Route path="/order/:id" element={<Order />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/order/:id" element={<OrderScreen />} />
+        <Route path="/profile" element={<ProfileScreen />} />
+      </Route>
+
+      <Route element={<AdminRoute />}>
+        <Route path="/admin/orderlist" element={<OrderListScreen />} />
+        <Route path="/admin/productlist" element={<ProductListScreen />} />
       </Route>
     </Route>
   )

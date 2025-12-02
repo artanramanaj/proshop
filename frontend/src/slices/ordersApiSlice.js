@@ -16,9 +16,24 @@ const ordersApiSlice = apiSlice.injectEndpoints({
     getMyOrders: build.query({
       query: () => `${ORDERS_URL}/mine`,
     }),
+    getOrders: build.query({
+      query: () => `${ORDERS_URL}`,
+    }),
+    markDeliver: build.mutation({
+      query: (id) => ({
+        url: `${ORDERS_URL}/${id}/deliver`,
+        method: "PUT",
+      }),
+    }),
   }),
+
   overrideExisting: false,
 });
 
-export const { useAddOrderMutation, useGetOrderQuery, useGetMyOrdersQuery } =
-  ordersApiSlice;
+export const {
+  useAddOrderMutation,
+  useMarkDeliverMutation,
+  useGetOrderQuery,
+  useGetMyOrdersQuery,
+  useGetOrdersQuery,
+} = ordersApiSlice;

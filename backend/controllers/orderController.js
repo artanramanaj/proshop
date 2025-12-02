@@ -75,12 +75,25 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
 // Put api/orders/:id/deliver
 // @ACCESS Admin
 export const updateOrderToDelivered = asyncHandler(async (req, res) => {
-  res.status(200).json("update order to deliver");
+  const { id } = req.params;
+  const order = await Order.findByIdAndUpdate(
+    id,
+    { isDelivered: true },
+    {
+      new: true,
+    }
+  );
+  console.log("order", order);
+  res.status(200).json(order);
 });
 
 // @DESC update order to delivered
 // Get api/orders/:id/deliver
 // @ACCESS Admin
 export const getOrders = asyncHandler(async (req, res) => {
-  res.status(200).json("get all orders");
+  const orders = await Order.find({})
+    .populate("user", "name email")
+    .sort({ createdAt: -1 });
+
+  res.status(200).json(orders);
 });

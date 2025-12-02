@@ -14,7 +14,6 @@ import {
 const Header = () => {
   const cartStore = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
-  const user = JSON.parse(localStorage.getItem("userInfo"));
 
   const quantiyResultBadge = cartStore.cartItems.reduce(
     (acc, currentItems) => acc + Number(currentItems.qty),
@@ -52,7 +51,7 @@ const Header = () => {
                   </Badge>
                 )}
               </Nav.Link>
-              {!user ? (
+              {!userInfo ? (
                 <Nav.Link as={Link} to="/login">
                   <FaUser /> Sign In
                 </Nav.Link>
@@ -69,6 +68,20 @@ const Header = () => {
                   <NavDropdown.Divider />
                   <NavDropdown.Item onClick={logoutFunc}>
                     Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
+              )}
+
+              {userInfo && userInfo.isAdmin && (
+                <NavDropdown title="Admin" id="adminmenu" menuVariant="dark">
+                  <NavDropdown.Item as={Link} to="/admin/productlist">
+                    Product List
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/admin/orderlist">
+                    Order List
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/admin/userlist">
+                    User List
                   </NavDropdown.Item>
                 </NavDropdown>
               )}

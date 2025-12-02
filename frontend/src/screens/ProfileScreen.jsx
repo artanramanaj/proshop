@@ -2,7 +2,7 @@ import { Form, Button, Row, Col, Card, Table, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
 import FormContainer from "../components/FormContainer";
 import { useUpdateProfileMutation } from "../slices/usersApiSlice";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
 import Loader from "../components/Loader";
@@ -22,7 +22,9 @@ const Profile = () => {
     data: mineOrders,
     isLoading: mineIsLoading,
     error: mineError,
-  } = useGetMyOrdersQuery();
+  } = useGetMyOrdersQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   console.log("mineOrders", mineOrders);
 
@@ -48,6 +50,9 @@ const Profile = () => {
   const handleDetails = (id) => {
     navigate(`/order/${id}`);
   };
+  // useEffect(() => {
+  //   refetch();
+  // }, [userInfo._id]);
   if (isLoading) return <Loader />;
   if (mineIsLoading) return <Loader />;
   if (error) return <Message variant="danger">{error}</Message>;
@@ -55,7 +60,7 @@ const Profile = () => {
   return (
     <>
       <Row>
-        <Col md={6}>
+        <Col md={userInfo.isAdmin ? 12 : 6}>
           <FormContainer>
             <h1>Update Profile</h1>
             <Form onSubmit={updateProfileFunc}>
@@ -113,55 +118,63 @@ const Profile = () => {
           </FormContainer>
         </Col>
 
-        <Col md={6}>
-          <div className="container mt-4">
-            <h2>My Orders</h2>
-            <Table responsive striped bordered hover>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Date</th>
-                  <th>Total</th>
-                  <th>Paid</th>
-                  <th>Delivered</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mineOrders.map((order) => (
-                  <tr key={order._id}>
-                    <td>{order._id}</td>
-                    <td>{order.createdAt.split("T")[0]}</td>
-                    <td>${order.totalPrice}</td>
-                    <td>
-                      {order.isPaid ? (
-                        <Badge bg="success">✓</Badge>
-                      ) : (
-                        <Badge bg="danger">✗</Badge>
-                      )}
-                    </td>
-                    <td>
-                      {order.isDeliverd ? (
-                        <Badge bg="success">✓</Badge>
-                      ) : (
-                        <Badge bg="danger">✗</Badge>
-                      )}
-                    </td>
-                    <td>
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() => handleDetails(order._id)}
-                      >
-                        Details
-                      </Button>
-                    </td>
+        {!userInfo.isAdmin && mineOrders && mineOrders.length > 0 && (
+          <Col md={6}>
+            <div className="container mt-4">
+              <h2>My Orders</h2>
+              <Table responsive striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Delivered</th>
+                    <th>Details</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
-        </Col>
+                </thead>
+                <tbody>
+                  {mineOrders.map((order) => (
+                    <tr key={order._id}>
+                      <td>{order._id}</td>
+                      <td>{order.createdAt.split("T")[0]}</td>
+                      <td>${order.totalPrice}</td>
+                      <td>
+                        {order.isPaid ? (
+                          <Badge bg="success">✓</Badge>
+                        ) : (
+                          <Badge bg="danger">✗</Badge>
+                        )}
+                      </td>
+                      <td>
+                        {order.isDelivered ? (
+                          <Badge bg="success">✓</Badge>
+                        ) : (
+                          <Badge bg="danger">✗</Badge>
+                        )}
+                      </td>
+                      <td>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => handleDetails(order._id)}
+                        >
+                          Details
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </Col>
+        )}
+        {!mineOrders ||
+          (mineOrders.length == 0 && !userInfo.isAdmin && (
+            <Col md={6}>
+              <Message>You have no orders !</Message>
+            </Col>
+          ))}
       </Row>
     </>
   );

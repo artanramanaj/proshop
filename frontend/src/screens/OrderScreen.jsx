@@ -1,22 +1,38 @@
 import React from "react";
 import { Button, Row, Col, ListGroup, Image, Card } from "react-bootstrap";
-import { useGetOrderQuery } from "../slices/ordersApiSlice";
+import {
+  useGetOrderQuery,
+  useMarkDeliverMutation,
+} from "../slices/ordersApiSlice";
 import { useParams } from "react-router-dom";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 const Order = () => {
   const { id: orderId } = useParams();
-  const { data: order, isLoading, error } = useGetOrderQuery(orderId);
+  const { data: order, isLoading, error, refetch } = useGetOrderQuery(orderId);
+  const [markDeliver, { isLoading: deliverLoading, error: deliverError }] =
+    useMarkDeliverMutation();
 
   console.log("order", order);
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
-  const { name, email } = userInfo;
-
-  if (isLoading) return <Loader />;
-  if (error) return <Message variant="danger">{error}</Message>;
+  const { name, email, isAdmin } = userInfo;
+  const markAsDelivered = async () => {
+    try {
+      const result = await markDeliver(orderId).unwrap();
+      await refetch();
+      toast.success("marked as delivered");
+      console.log("result", result);
+    } catch (error) {
+      toast.error(error?.data?.message);
+    }
+  };
+  if (isLoading || deliverLoading) return <Loader />;
+  if (error || deliverError)
+    return <Message variant="danger">{error || deliverError}</Message>;
 
   return (
     <Row>
@@ -37,7 +53,7 @@ const Order = () => {
               {order.shippingAddress.country}
             </p>
             {order.isDelivered ? (
-              <Message>Delivered</Message>
+              <Message variant="success">Delivered</Message>
             ) : (
               <Message variant="danger">Not delivered</Message>
             )}
@@ -49,9 +65,9 @@ const Order = () => {
               <strong>Method:</strong> {order.paymentMethod}
             </p>
             {order.isPaid ? (
-              <Message>Paid</Message>
+              <Message variant="success">Paid</Message>
             ) : (
-              <Message variant="danger">Not delivered</Message>
+              <Message variant="danger">Not Paid</Message>
             )}
           </ListGroup.Item>
 
@@ -109,6 +125,20 @@ const Order = () => {
                 <Col>${order.totalPrice}</Col>
               </Row>
             </ListGroup.Item>
+
+            {isAdmin && order.isDelivered == false && (
+              <ListGroup.Item>
+                <Row>
+                  <Button
+                    type="button"
+                    className="btn-block"
+                    onClick={() => markAsDelivered()}
+                  >
+                    Mark as Delivered
+                  </Button>
+                </Row>
+              </ListGroup.Item>
+            )}
           </ListGroup>
         </Card>
       </Col>
