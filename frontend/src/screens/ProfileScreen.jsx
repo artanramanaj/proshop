@@ -1,4 +1,4 @@
-import { Form, Button, Row, Col, Card, Table, Badge } from "react-bootstrap";
+import { Form, Button, Row, Col, Table, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
 import FormContainer from "../components/FormContainer";
 import { useUpdateProfileMutation } from "../slices/usersApiSlice";

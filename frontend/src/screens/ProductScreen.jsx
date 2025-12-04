@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Message from "../components/Message.jsx";
 import {
   Form,
@@ -18,12 +18,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../slices/cartSlice.js";
 const ProductScreen = () => {
   const { id: productId } = useParams();
-  const { data: product, isLoading, error } = useGetProductQuery(productId);
+  const {
+    data: product,
+    refetch,
+    isLoading,
+    error,
+  } = useGetProductQuery(productId);
+  console.log("product", product);
   const [qty, setQty] = useState(1);
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    refetch();
+  }, [product]);
   if (isLoading) return <Loader />;
   if (error)
     return (
@@ -31,13 +39,16 @@ const ProductScreen = () => {
         Error loading product: {error?.data?.message || "Unknown error"}
       </Message>
     );
+
   if (!product) return <p>Product not found</p>;
 
   return (
     <div className="d-flex flex-column gap-4">
-      <Button variant="light" className="py-2 align-self-start">
-        Go Back
-      </Button>
+      <Link to={"/"}>
+        <Button variant="light" className="py-2 align-self-start">
+          Go Back
+        </Button>
+      </Link>
 
       <Row>
         <Col md={5}>

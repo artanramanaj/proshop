@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import Product from "../components/Product";
 import Loader from "../components/Loader.jsx";
@@ -6,7 +5,6 @@ import Message from "../components/Message.jsx";
 import { useGetProductsQuery } from "../slices/productsApiSlice.js";
 const HomeScreen = () => {
   const productss = useGetProductsQuery();
-  console.log("get products", productss);
   const { data: products, isLoading, error } = useGetProductsQuery();
   return (
     <>

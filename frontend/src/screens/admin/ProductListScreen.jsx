@@ -1,24 +1,57 @@
 import React from "react";
-import { useGetProductsQuery } from "../../slices/productsApiSlice";
+import {
+  useGetProductsQuery,
+  useAddNewProductMutation,
+  useDeleteProductMutation,
+} from "../../slices/productsApiSlice";
 import { Button, Row, Col, Table, Badge } from "react-bootstrap";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import DeleteModal from "../../components/DeleteModal";
+import { useState } from "react";
 const ProductListScreen = () => {
+  const [toggleModal, setToggleModal] = useState(false);
+  const [prodId, setProdId] = useState(null);
   const { data: products, isLoading, error } = useGetProductsQuery();
-  console.log("products", products);
-  const deleteProduct = (id) => {
-    console.log("click", id);
+  const navigate = useNavigate();
+  const [addNewProduct, { isLoading: createLoading, error: createError }] =
+    useAddNewProductMutation();
+  const [
+    deleteProduct,
+    { isLoading: deleteProductLoading, error: deleteError },
+  ] = useDeleteProductMutation();
+
+  const createProduct = async () => {
+    try {
+      await addNewProduct().unwrap();
+      toast.success("product created");
+    } catch (error) {
+      toast.error(error?.data?.message);
+    }
+  };
+  const removeProduct = async (id) => {
+    try {
+      const res = await deleteProduct(id).unwrap();
+      toast.success(res.message);
+      setToggleModal(false);
+    } catch (error) {
+      toast.error(error?.data?.message);
+      setToggleModal(false);
+    }
   };
   const handleEdit = (id) => {
-    console.log(id);
+    navigate(`/admin/product/${id}/edit`);
   };
 
-  const handleDelete = (id) => {
-    console.log(id);
+  const toggleDeleteModal = (bool, id) => {
+    setToggleModal(bool);
+    setProdId(id);
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading || deleteProductLoading) return <Loader />;
   if (error) return <Message variant="danger">{error}</Message>;
   return (
     <>
@@ -31,7 +64,7 @@ const ProductListScreen = () => {
             variant="dark"
             className="d-flex align-items-center gap-1"
             style={{ backgroundColor: "#1f2833", borderColor: "#27354b" }}
-            onClick={() => console.log("Create new product")}
+            onClick={() => createProduct()}
           >
             <FaPlus /> Create Product
           </Button>
@@ -65,7 +98,7 @@ const ProductListScreen = () => {
                         variant="outline-primary"
                         size="sm"
                         className="me-1"
-                        onClick={() => handleEdit(product.id)}
+                        onClick={() => handleEdit(product._id)}
                         title="Edit"
                       >
                         <FaEdit />
@@ -73,7 +106,7 @@ const ProductListScreen = () => {
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => toggleDeleteModal(true, product._id)}
                         title="Delete"
                       >
                         <FaTrash />
@@ -86,6 +119,12 @@ const ProductListScreen = () => {
           </div>
         </Col>
       </Row>
+      <DeleteModal
+        updateToggle={toggleDeleteModal}
+        removeProduct={removeProduct}
+        toggleModal={toggleModal}
+        prodId={prodId}
+      />
     </>
   );
 };
