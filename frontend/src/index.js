@@ -28,6 +28,8 @@ import ProfileScreen from "./screens/ProfileScreen";
 import OrderListScreen from "./screens/admin/OrderListScreen";
 import ProductListScreen from "./screens/admin/ProductListScreen";
 import EditProductScreen from "./screens/admin/EditProductScreen";
+import UserListScreen from "./screens/admin/UserListScreen";
+import EditUserScreen from "./screens/admin/EditUserScreen";
 import "react-toastify/dist/ReactToastify.css";
 
 const router = createBrowserRouter(
@@ -51,6 +53,8 @@ const router = createBrowserRouter(
         <Route path="/admin/orderlist" element={<OrderListScreen />} />
         <Route path="/admin/productlist" element={<ProductListScreen />} />
         <Route path="/admin/product/:id/edit" element={<EditProductScreen />} />
+        <Route path="/admin/userlist" element={<UserListScreen />} />
+        <Route path="/admin/userlist/:id/edit" element={<EditUserScreen />} />
       </Route>
     </Route>
   )

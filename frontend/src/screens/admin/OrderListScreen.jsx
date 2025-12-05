@@ -19,7 +19,12 @@ const OrdersListScreen = () => {
     navigate(`/order/${id}`);
   };
   if (isLoading) return <Loader />;
-  if (error) return <Message variant="danger">{error}</Message>;
+  if (error)
+    return (
+      <Message variant="danger">
+        {error?.data?.message || "something went wrong"}
+      </Message>
+    );
   return (
     <>
       <Row>
@@ -36,6 +41,7 @@ const OrdersListScreen = () => {
                   <th>Total</th>
                   <th>Paid</th>
                   <th>Delivered</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>

@@ -128,7 +128,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
 // GET api/users
 // @ACCESS Private/Admin
 export const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({}).select("-password");
   res.status(200).json(users);
 });
 
@@ -138,7 +138,7 @@ export const getUsers = asyncHandler(async (req, res) => {
 export const getUserById = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
   if (userId) {
-    const user = await User.findById({ _id: userId });
+    const user = await User.findById({ _id: userId }).select("-password");
     return res.status(200).json(user);
   }
   throw new Error("there is no user with this id or the userid didn't match");
@@ -153,7 +153,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
     await User.findOneAndDelete({ _id: userId });
   }
   // Fetch all remaining users
-  const remainingUsers = await User.find();
+  const remainingUsers = await User.find().select("-password");
 
   res.status(200).json({
     message: "User deleted successfully",
@@ -166,7 +166,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
 // @ACCESS Private/Admin
 export const updateUser = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
-  const { name, email, password } = req.body;
+  const { name, email, isAdmin } = req.body;
   const emailexist = await User.findOne({ email, _id: { $ne: userId } });
   console.log("email exist", emailexist);
   if (emailexist) {
@@ -178,12 +178,12 @@ export const updateUser = asyncHandler(async (req, res) => {
       {
         name,
         email,
-        password: await encryptPassword(password),
+        isAdmin,
       },
       {
         new: true,
       }
-    );
+    ).select("-password");
     res.status(200).json({ message: "user has been updated", user });
   }
 });

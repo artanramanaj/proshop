@@ -32,7 +32,13 @@ const Order = () => {
   };
   if (isLoading || deliverLoading) return <Loader />;
   if (error || deliverError)
-    return <Message variant="danger">{error || deliverError}</Message>;
+    return (
+      <Message variant="danger">
+        {error?.data?.message ||
+          deliverError?.data?.message ||
+          "something went wrong"}
+      </Message>
+    );
 
   return (
     <Row>

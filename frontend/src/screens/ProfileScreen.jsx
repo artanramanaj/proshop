@@ -2,7 +2,7 @@ import { Form, Button, Row, Col, Table, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
 import FormContainer from "../components/FormContainer";
 import { useUpdateProfileMutation } from "../slices/usersApiSlice";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
 import Loader from "../components/Loader";
@@ -55,8 +55,18 @@ const Profile = () => {
   // }, [userInfo._id]);
   if (isLoading) return <Loader />;
   if (mineIsLoading) return <Loader />;
-  if (error) return <Message variant="danger">{error}</Message>;
-  if (mineError) return <Message variant="danger">{mineError}</Message>;
+  if (error)
+    return (
+      <Message variant="danger">
+        {error?.data?.message || "something went wrong"}
+      </Message>
+    );
+  if (mineError)
+    return (
+      <Message variant="danger">
+        {mineError?.data?.message || "something went wrong"}
+      </Message>
+    );
   return (
     <>
       <Row>

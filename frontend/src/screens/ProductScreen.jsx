@@ -36,7 +36,7 @@ const ProductScreen = () => {
   if (error)
     return (
       <Message variant="danger">
-        Error loading product: {error?.data?.message || "Unknown error"}
+        Error loading product: {error?.data?.message || "something went wrong"}
       </Message>
     );
 

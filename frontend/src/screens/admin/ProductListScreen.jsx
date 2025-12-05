@@ -4,7 +4,7 @@ import {
   useAddNewProductMutation,
   useDeleteProductMutation,
 } from "../../slices/productsApiSlice";
-import { Button, Row, Col, Table, Badge } from "react-bootstrap";
+import { Button, Row, Col, Table } from "react-bootstrap";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
@@ -51,8 +51,13 @@ const ProductListScreen = () => {
     setProdId(id);
   };
 
-  if (isLoading || deleteProductLoading) return <Loader />;
-  if (error) return <Message variant="danger">{error}</Message>;
+  if (isLoading || deleteProductLoading || createLoading) return <Loader />;
+  if (error)
+    return (
+      <Message variant="danger">
+        {error?.data?.message || "something went wrong"}
+      </Message>
+    );
   return (
     <>
       <Row className="align-items-center mb-3">
@@ -121,9 +126,9 @@ const ProductListScreen = () => {
       </Row>
       <DeleteModal
         updateToggle={toggleDeleteModal}
-        removeProduct={removeProduct}
+        remove={removeProduct}
         toggleModal={toggleModal}
-        prodId={prodId}
+        id={prodId}
       />
     </>
   );

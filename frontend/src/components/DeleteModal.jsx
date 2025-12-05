@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 
-const DeleteModal = ({ toggleModal, prodId, updateToggle, removeProduct }) => {
+const DeleteModal = ({ toggleModal, id, updateToggle, remove }) => {
   return (
     <Modal show={toggleModal}>
       <Modal.Header>
@@ -12,8 +11,8 @@ const DeleteModal = ({ toggleModal, prodId, updateToggle, removeProduct }) => {
         <Button variant="secondary" onClick={() => updateToggle(false)}>
           Close
         </Button>
-        <Button variant="danger" onClick={() => removeProduct(prodId)}>
-          Delete Product
+        <Button variant="danger" onClick={() => remove(id)}>
+          Delete
         </Button>
       </Modal.Footer>
     </Modal>
