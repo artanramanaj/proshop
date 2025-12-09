@@ -9,6 +9,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useNavigate } from "react-router-dom";
 import { useGetMyOrdersQuery } from "../slices/ordersApiSlice";
+import Paggination from "../components/Paggination";
 const Profile = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   console.log("userInfo", userInfo);
@@ -16,16 +17,25 @@ const Profile = () => {
   const [email, setEmail] = useState(userInfo.email);
   const [password, setPassword] = useState(null);
   const [confirmpassword, setConfrimPassword] = useState(null);
+  const [page, setPage] = useState(1);
   const [updateProfile, { isLoading, error }] = useUpdateProfileMutation();
 
   const {
-    data: mineOrders,
+    data,
     isLoading: mineIsLoading,
     error: mineError,
-  } = useGetMyOrdersQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-
+  } = useGetMyOrdersQuery(
+    {
+      perPage: page || 1,
+      limit: 5,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+  const mineOrders = data?.orders || [];
+  const currentPage = data?.currentPage || 1;
+  const totalPages = data?.totalPages || 1;
   console.log("mineOrders", mineOrders);
 
   const dispatch = useDispatch();
@@ -50,9 +60,9 @@ const Profile = () => {
   const handleDetails = (id) => {
     navigate(`/order/${id}`);
   };
-  // useEffect(() => {
-  //   refetch();
-  // }, [userInfo._id]);
+  const changeCurrentPage = (page) => {
+    setPage(page);
+  };
   if (isLoading) return <Loader />;
   if (mineIsLoading) return <Loader />;
   if (error)
@@ -176,11 +186,20 @@ const Profile = () => {
                   ))}
                 </tbody>
               </Table>
+              <Row>
+                <Col md={12} className="d-flex gap-4 justify-content-center">
+                  <Paggination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    changeCurrentPage={changeCurrentPage}
+                  />
+                </Col>
+              </Row>
             </div>
           </Col>
         )}
         {!mineOrders ||
-          (mineOrders.length == 0 && !userInfo.isAdmin && (
+          (mineOrders.length === 0 && !userInfo.isAdmin && (
             <Col md={6}>
               <Message>You have no orders !</Message>
             </Col>

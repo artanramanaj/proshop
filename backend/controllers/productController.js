@@ -4,8 +4,19 @@ import asyncHandler from "../middleware/asyncHandlerMiddleware.js";
 // GET api/products
 // @ACCESS Public
 export const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({});
-  res.status(200).json(products);
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 8;
+
+  const products = await Product.find()
+    .skip(limit * (page - 1))
+    .limit(limit)
+    .sort({ createdAt: -1 });
+  const count = await Product.countDocuments();
+  return res.status(200).json({
+    totalPages: Math.ceil(count / limit),
+    currentPage: page,
+    products,
+  });
 });
 
 // @DESC fetch single product
@@ -78,4 +89,48 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   await Product.findByIdAndDelete(id);
   res.status(201).json({ message: "product deleted successfully" });
+});
+
+// @DESC Review product
+// PUT /api/products/:id/review
+// @ACCESS Private
+export const reviewProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { rating, comment } = req.body;
+
+  const product = await Product.findById(id);
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  const userReviewed = product.review.find((el) => {
+    return el.user.toString() === req.user._id.toString();
+  });
+
+  if (userReviewed) {
+    res.status(404);
+    throw new Error("You have already reviewed this product");
+  } else if (!req.user._id) {
+    res.status(401);
+    throw new Error("You need to be a logged in  to make a review");
+  }
+
+  product.review.push({
+    user: req.user._id,
+    name: req.user.name,
+    rating: Number(rating),
+    comment,
+  });
+  const totalRate = product.review.reduce((acc, el) => acc + el.rating, 0);
+
+  product.numReviews = product.review.length;
+  product.rating = totalRate / product.numReviews;
+
+  await product.save();
+
+  res.status(201).json({
+    message: "Review added successfully",
+    product,
+  });
 });

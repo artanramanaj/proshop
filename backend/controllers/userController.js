@@ -128,8 +128,19 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
 // GET api/users
 // @ACCESS Private/Admin
 export const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({}).select("-password");
-  res.status(200).json(users);
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 3;
+  const users = await User.find({})
+    .select("-password")
+    .skip(limit * (page - 1))
+    .limit(limit)
+    .sort({ createdAt: -1 });
+  const count = await User.countDocuments();
+  return res.status(200).json({
+    totalPages: Math.ceil(count / limit),
+    currentPage: page,
+    users,
+  });
 });
 
 // @DESC GET  specific user

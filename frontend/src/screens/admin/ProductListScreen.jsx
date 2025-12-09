@@ -12,17 +12,24 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import DeleteModal from "../../components/DeleteModal";
 import { useState } from "react";
+import Paggination from "../../components/Paggination";
 const ProductListScreen = () => {
+  const [page, setPage] = useState();
   const [toggleModal, setToggleModal] = useState(false);
   const [prodId, setProdId] = useState(null);
-  const { data: products, isLoading, error } = useGetProductsQuery();
+  const { data, isLoading, error } = useGetProductsQuery({
+    perPage: page || 1,
+    limit: 10,
+  });
+
+  const products = data?.products || [];
+  const currentPage = data?.currentPage || 1;
+  const totalPages = data?.totalPages || 1;
   const navigate = useNavigate();
-  const [addNewProduct, { isLoading: createLoading, error: createError }] =
+  const [addNewProduct, { isLoading: createLoading }] =
     useAddNewProductMutation();
-  const [
-    deleteProduct,
-    { isLoading: deleteProductLoading, error: deleteError },
-  ] = useDeleteProductMutation();
+  const [deleteProduct, { isLoading: deleteProductLoading }] =
+    useDeleteProductMutation();
 
   const createProduct = async () => {
     try {
@@ -50,7 +57,9 @@ const ProductListScreen = () => {
     setToggleModal(bool);
     setProdId(id);
   };
-
+  const changeCurrentPage = (page) => {
+    setPage(page);
+  };
   if (isLoading || deleteProductLoading || createLoading) return <Loader />;
   if (error)
     return (
@@ -78,50 +87,63 @@ const ProductListScreen = () => {
       <Row>
         <Col md={12}>
           <div className="container mt-4">
-            <Table responsive striped bordered hover>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Category</th>
-                  <th>Brand</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product._id}>
-                    <td>{product._id}</td>
-                    <td>{product.name}</td>
-                    <td>${product.price}</td>
-                    <td>{product.category}</td>
-                    <td>{product.brand}</td>
-
-                    <td>
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        className="me-1"
-                        onClick={() => handleEdit(product._id)}
-                        title="Edit"
-                      >
-                        <FaEdit />
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => toggleDeleteModal(true, product._id)}
-                        title="Delete"
-                      >
-                        <FaTrash />
-                      </Button>
-                    </td>
+            {!products && products.length === 0 ? (
+              <Message>There are no products</Message>
+            ) : (
+              <Table responsive striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th></th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {products.map((product) => (
+                    <tr key={product._id}>
+                      <td>{product._id}</td>
+                      <td>{product.name}</td>
+                      <td>${product.price}</td>
+                      <td>{product.category}</td>
+                      <td>{product.brand}</td>
+
+                      <td>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          className="me-1"
+                          onClick={() => handleEdit(product._id)}
+                          title="Edit"
+                        >
+                          <FaEdit />
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => toggleDeleteModal(true, product._id)}
+                          title="Delete"
+                        >
+                          <FaTrash />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
           </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12} className="d-flex gap-4 justify-content-center">
+          <Paggination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            changeCurrentPage={changeCurrentPage}
+          />
         </Col>
       </Row>
       <DeleteModal

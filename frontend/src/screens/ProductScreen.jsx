@@ -12,10 +12,15 @@ import {
   ListGroupItem,
 } from "react-bootstrap";
 import Rating from "../components/Rating";
-import { useGetProductQuery } from "../slices/productsApiSlice";
+import {
+  useGetProductQuery,
+  useCreateReviewMutation,
+} from "../slices/productsApiSlice";
 import Loader from "../components/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../slices/cartSlice.js";
+import { FaStar, FaRegStar } from "react-icons/fa";
+import { toast } from "react-toastify";
 const ProductScreen = () => {
   const { id: productId } = useParams();
   const {
@@ -24,15 +29,40 @@ const ProductScreen = () => {
     isLoading,
     error,
   } = useGetProductQuery(productId);
-  console.log("product", product);
+
+  const [createReview, { isLoading: createReviewLoading }] =
+    useCreateReviewMutation();
   const [qty, setQty] = useState(1);
-  const cart = useSelector((state) => state.cart);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState();
+  const auth = useSelector((state) => state.auth);
+  const { userInfo } = auth;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
     refetch();
-  }, [product]);
-  if (isLoading) return <Loader />;
+  }, []);
+
+  console.log("product", product);
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+    try {
+      const body = {
+        rating,
+        comment,
+      };
+      const res = await createReview({
+        id: productId,
+        data: body,
+      }).unwrap();
+      toast.success(res.message);
+    } catch (error) {
+      console.log("error", error);
+      toast.error(error?.data?.message);
+    }
+  };
+  if (isLoading || createReviewLoading) return <Loader />;
   if (error)
     return (
       <Message variant="danger">
@@ -40,7 +70,7 @@ const ProductScreen = () => {
       </Message>
     );
 
-  if (!product) return <p>Product not found</p>;
+  if (!product) return <Message variant="danger">Product not found</Message>;
 
   return (
     <div className="d-flex flex-column gap-4">
@@ -138,6 +168,93 @@ const ProductScreen = () => {
           </Card>
         </Col>
       </Row>
+      <Row>
+        <Col md={12}>
+          <Card>
+            <ListGroup variant="flush">
+              <ListGroupItem style={{ backgroundColor: "#f2f2f2" }}>
+                <h2>Reviews</h2>
+              </ListGroupItem>
+              {product.review.length === 0 ? (
+                <Message variant="danger">No reviews</Message>
+              ) : (
+                product.review.map((el, index) => {
+                  return (
+                    <Row key={el._id}>
+                      <Col>
+                        <ListGroup variant="flush" className="border-bottom">
+                          <ListGroupItem>
+                            <p>{el.name}</p>
+                            {[1, 2, 3, 4, 5].map((star) =>
+                              el.rating >= star ? (
+                                <FaStar key={star} />
+                              ) : (
+                                <FaRegStar key={star} />
+                              )
+                            )}
+                            <p>{el.updatedAt.split("T")[0]}</p>
+                            <p>{el.comment}</p>
+                          </ListGroupItem>
+                        </ListGroup>
+                      </Col>
+                    </Row>
+                  );
+                })
+              )}
+            </ListGroup>
+          </Card>
+        </Col>
+      </Row>
+
+      {userInfo && (
+        <Row>
+          <Col>
+            <Card>
+              {" "}
+              <ListGroup variant="flush">
+                <ListGroupItem style={{ backgroundColor: "#f2f2f2" }}>
+                  <h2>Write a review</h2>
+                </ListGroupItem>
+              </ListGroup>
+              <ListGroup variant="flush">
+                <Form onSubmit={submitReview} className="p-1">
+                  <Form.Group controlId="rating" className="my-3">
+                    <Form.Label>Rating</Form.Label>
+                    <Form.Select
+                      aria-label="Default select example"
+                      defaultValue={5}
+                      onChange={(e) => setRating(Number(e.target.value))}
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </Form.Select>
+                  </Form.Group>
+
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlTextarea1"
+                  >
+                    <Form.Label>Example textarea</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      onChange={(e) => setComment(e.target.value)}
+                    />
+                  </Form.Group>
+                  <Button type="submit" variant="primary" className="mt-2">
+                    Submit Review
+                  </Button>
+                </Form>
+              </ListGroup>
+            </Card>
+          </Col>
+        </Row>
+      )}
+
+      {!userInfo && <Message>Sign in to make a review</Message>}
     </div>
   );
 };

@@ -40,7 +40,8 @@ const usersApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["User"],
     }),
     getUsers: build.query({
-      query: () => `${USERS_URL}`,
+      query: ({ perPage, limit }) =>
+        `${USERS_URL}/?page=${perPage}&limit=${limit}`,
       providesTags: ["User"],
     }),
     getUser: build.query({

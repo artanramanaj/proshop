@@ -3,9 +3,25 @@ import Product from "../components/Product";
 import Loader from "../components/Loader.jsx";
 import Message from "../components/Message.jsx";
 import { useGetProductsQuery } from "../slices/productsApiSlice.js";
+import { useState } from "react";
+import Paggination from "../components/Paggination.jsx";
 const HomeScreen = () => {
-  const productss = useGetProductsQuery();
-  const { data: products, isLoading, error } = useGetProductsQuery();
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, error } = useGetProductsQuery({
+    perPage: page || 1,
+    limit: 8,
+  });
+  console.log(data);
+
+  const products = data?.products || [];
+  const currentPage = data?.currentPage || 1;
+  const totalPages = data?.totalPages || 1;
+
+  const changeCurrentPage = (page) => {
+    setPage(page);
+  };
+
   return (
     <>
       <h1>latest products</h1>
@@ -32,6 +48,16 @@ const HomeScreen = () => {
                 <Product product={product} />
               </Col>
             ))}
+          </Row>
+
+          <Row>
+            <Col md={12} className="d-flex gap-4 justify-content-center">
+              <Paggination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                changeCurrentPage={changeCurrentPage}
+              />
+            </Col>
           </Row>
         </>
       )}

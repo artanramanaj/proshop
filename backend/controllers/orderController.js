@@ -43,11 +43,24 @@ export const addOrderItems = asyncHandler(async (req, res) => {
 // GET api/orders/myorders
 // @ACCESS Auth usser
 export const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id }).sort({
-    createdAt: -1,
-  }); // Optional: Sort by newest first
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
 
-  res.status(200).json(orders);
+  // Count all orders for this user
+  const totalOrders = await Order.countDocuments({ user: req.user._id });
+
+  // Fetch only current page
+  const orders = await Order.find({ user: req.user._id })
+    .skip(limit * (page - 1))
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  return res.status(200).json({
+    totalPages: Math.ceil(totalOrders / limit),
+    currentPage: page,
+    totalOrders,
+    orders,
+  });
 });
 
 // @DESC get order by id
@@ -91,9 +104,18 @@ export const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // Get api/orders/:id/deliver
 // @ACCESS Admin
 export const getOrders = asyncHandler(async (req, res) => {
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
   const orders = await Order.find({})
     .populate("user", "name email")
+    .skip(limit * (page - 1))
+    .limit(limit)
     .sort({ createdAt: -1 });
 
-  res.status(200).json(orders);
+  const count = await Order.countDocuments();
+  return res.status(200).json({
+    totalPages: Math.ceil(count / limit),
+    currentPage: page,
+    orders,
+  });
 });
