@@ -7,14 +7,40 @@ export const getProducts = asyncHandler(async (req, res) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 8;
 
-  const products = await Product.find()
+  const search = req.query.search || "";
+
+  const filter = search
+    ? {
+        name: {
+          $regex: search,
+          $options: "i", // case insensitive
+        },
+      }
+    : {};
+
+  const count = await Product.countDocuments(filter);
+
+  const products = await Product.find(filter)
     .skip(limit * (page - 1))
     .limit(limit)
     .sort({ createdAt: -1 });
-  const count = await Product.countDocuments();
+
   return res.status(200).json({
     totalPages: Math.ceil(count / limit),
     currentPage: page,
+    products,
+  });
+});
+
+// @DESC get top products
+// GET api/products/top
+// @ACCESS Public
+export const topProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({})
+    .sort({ rating: -1, createdAt: -1 }) // combine sorting
+    .limit(3);
+
+  return res.status(200).json({
     products,
   });
 });

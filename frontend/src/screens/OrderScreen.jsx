@@ -1,14 +1,12 @@
-import React from "react";
 import { Button, Row, Col, ListGroup, Image, Card } from "react-bootstrap";
 import {
   useGetOrderQuery,
   useMarkDeliverMutation,
+  useMarkPaidMutation,
 } from "../slices/ordersApiSlice";
 import { useParams } from "react-router-dom";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
-import { useEffect } from "react";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 const Order = () => {
@@ -17,25 +15,38 @@ const Order = () => {
   const [markDeliver, { isLoading: deliverLoading, error: deliverError }] =
     useMarkDeliverMutation();
 
+  const [markPaid, { isLoading: paidLoading, error: paidError }] =
+    useMarkPaidMutation();
+
   console.log("order", order);
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
   const { name, email, isAdmin } = userInfo;
   const markAsDelivered = async () => {
     try {
-      const result = await markDeliver(orderId).unwrap();
+      const res = await markDeliver(orderId).unwrap();
+      toast.success(res.message);
       await refetch();
-      toast.success("marked as delivered");
-      console.log("result", result);
     } catch (error) {
       toast.error(error?.data?.message);
     }
   };
-  if (isLoading || deliverLoading) return <Loader />;
-  if (error || deliverError)
+
+  const markAsPaid = async () => {
+    try {
+      const res = await markPaid(orderId).unwrap();
+      toast.success(res.message);
+      await refetch();
+    } catch (error) {
+      toast.error(error?.data?.message);
+    }
+  };
+  if (isLoading || deliverLoading || paidLoading) return <Loader />;
+  if (error || deliverError || paidError)
     return (
       <Message variant="danger">
         {error?.data?.message ||
           deliverError?.data?.message ||
+          paidError?.data?.message ||
           "something went wrong"}
       </Message>
     );
@@ -132,17 +143,30 @@ const Order = () => {
               </Row>
             </ListGroup.Item>
 
-            {isAdmin && order.isDelivered == false && (
-              <ListGroup.Item>
-                <Row>
-                  <Button
-                    type="button"
-                    className="btn-block"
-                    onClick={() => markAsDelivered()}
-                  >
-                    Mark as Delivered
-                  </Button>
-                </Row>
+            {isAdmin && (
+              <ListGroup.Item className="d-flex flex-column align-items-strech justify-content-between gap-2">
+                {order.isDelivered == false && (
+                  <Row>
+                    <Button
+                      type="button"
+                      className="btn-block font-weight-bold"
+                      onClick={() => markAsDelivered()}
+                    >
+                      Mark as Delivered
+                    </Button>
+                  </Row>
+                )}
+                {order.isPaid == false && (
+                  <Row>
+                    <Button
+                      type="button"
+                      className="btn-block btn-warning font-weight-bold"
+                      onClick={() => markAsPaid()}
+                    >
+                      Mark as Paid
+                    </Button>
+                  </Row>
+                )}
               </ListGroup.Item>
             )}
           </ListGroup>

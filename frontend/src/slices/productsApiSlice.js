@@ -4,13 +4,17 @@ import { PRODUCTS_URL, UPLOAD_URL } from "../constants";
 const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getProducts: build.query({
-      query: ({ perPage, limit }) =>
-        `${PRODUCTS_URL}/?page=${perPage}&limit=${limit}`,
+      query: ({ search, page, limit }) =>
+        `${PRODUCTS_URL}/?search=${search}&page=${page}&limit=${limit}`,
       providesTags: ["Product"],
     }),
     getProduct: build.query({
       query: (id) => `${PRODUCTS_URL}/${id}`,
       providesTags: ["Product"],
+    }),
+
+    getTopProducts: build.query({
+      query: () => `${PRODUCTS_URL}/top`,
     }),
 
     addNewProduct: build.mutation({
@@ -64,5 +68,6 @@ export const {
   useUploadImageMutation,
   useDeleteProductMutation,
   useCreateReviewMutation,
+  useGetTopProductsQuery,
 } = productsApiSlice;
 export const { useGetProductQuery } = productsApiSlice;

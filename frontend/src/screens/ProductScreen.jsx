@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../slices/cartSlice.js";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { toast } from "react-toastify";
+import Seo from "../components/Seo.jsx";
 const ProductScreen = () => {
   const { id: productId } = useParams();
   const {
@@ -74,6 +75,7 @@ const ProductScreen = () => {
 
   return (
     <div className="d-flex flex-column gap-4">
+      <Seo title={product.name} description={product.description} />
       <Link to={"/"}>
         <Button variant="light" className="py-2 align-self-start">
           Go Back

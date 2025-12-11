@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { savePaymentMethods } from "../slices/cartSlice";
 import { useNavigate } from "react-router-dom";
 const PaymentScreen = () => {
-  const [paymentMethod, setPaymentMethod] = useState("PayPal");
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
   const dispatch = useDispatch();
   const { shippingAddress } = useSelector((state) => state.cart);
   const navigate = useNavigate();
@@ -32,11 +32,11 @@ const PaymentScreen = () => {
             <Form.Check
               type="radio"
               className="my-2"
-              label="PayPal or Credit Card"
-              id="PayPal"
+              label="Cash"
+              id="cash"
               name="paymentMethod"
-              value="PayPal"
-              checked={paymentMethod === "PayPal"}
+              value="cash"
+              checked={paymentMethod === "Cash"}
               onChange={(e) => setPaymentMethod(e.target.value)}
             />
           </Col>

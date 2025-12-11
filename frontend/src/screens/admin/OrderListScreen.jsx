@@ -11,7 +11,7 @@ const OrdersListScreen = () => {
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useGetOrdersQuery(
     {
-      perPage: page || 1,
+      page: page || 1,
       limit: 10,
     },
     {
@@ -41,7 +41,7 @@ const OrdersListScreen = () => {
         <Col md={12}>
           <div className="container mt-4">
             <h2>Orders</h2>
-            {!orders && orders.length === 0 ? (
+            {!orders || orders.length === 0 ? (
               <Message>There are no orders</Message>
             ) : (
               <Table responsive striped bordered hover>
@@ -97,13 +97,15 @@ const OrdersListScreen = () => {
         </Col>
       </Row>
       <Row>
-        <Col md={12} className="d-flex gap-4 justify-content-center">
-          <Paggination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            changeCurrentPage={changeCurrentPage}
-          />
-        </Col>
+        {orders && orders.length > 0 && (
+          <Col md={12} className="d-flex gap-4 justify-content-center">
+            <Paggination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              changeCurrentPage={changeCurrentPage}
+            />
+          </Col>
+        )}
       </Row>
     </>
   );

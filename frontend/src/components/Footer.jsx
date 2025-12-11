@@ -4,7 +4,7 @@ const Footer = () => {
   const getCurrentYear = new Date().getFullYear();
   return (
     <footer>
-      <Row>
+      <Row className="bg-dark text-white">
         <Col className="text-center py-3">
           <p>
             Proshop @copy <span className="fw-bold">{getCurrentYear}</span>

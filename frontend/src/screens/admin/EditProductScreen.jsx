@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FormContainer from "../../components/FormContainer";
 import { Form, Button } from "react-bootstrap";
 import {
@@ -69,7 +69,7 @@ const EditProductScreen = () => {
       toast.success(error?.data?.message);
     }
   };
-  if (isLoading || updateLoading) return <Loader />;
+  if (isLoading || updateLoading || uploadLoading) return <Loader />;
   if (error || updateError)
     return <Message variant="danger">{error || updateError} </Message>;
 

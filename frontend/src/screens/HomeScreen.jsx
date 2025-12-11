@@ -3,13 +3,32 @@ import Product from "../components/Product";
 import Loader from "../components/Loader.jsx";
 import Message from "../components/Message.jsx";
 import { useGetProductsQuery } from "../slices/productsApiSlice.js";
-import { useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Paggination from "../components/Paggination.jsx";
+import debounce from "lodash.debounce";
+import Search from "../components/Search.jsx";
+import TopProducts from "../components/TopProducts.jsx";
+import Seo from "../components/Seo.jsx";
 const HomeScreen = () => {
   const [page, setPage] = useState(1);
+  const [searchVal, setSearchVal] = useState("");
 
+  const debouncedSetSearch = useMemo(
+    () =>
+      debounce((value) => {
+        setSearchVal(value);
+      }, 1000),
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedSetSearch.cancel();
+    };
+  }, [debouncedSetSearch]);
   const { data, isLoading, error } = useGetProductsQuery({
-    perPage: page || 1,
+    search: searchVal || "",
+    page: page || 1,
     limit: 8,
   });
   console.log(data);
@@ -24,7 +43,6 @@ const HomeScreen = () => {
 
   return (
     <>
-      <h1>latest products</h1>
       {isLoading ? (
         <div>
           <h2>
@@ -33,8 +51,17 @@ const HomeScreen = () => {
         </div>
       ) : error ? (
         <Message variant="danger">{error?.data?.message}</Message>
+      ) : !products || products.length === 0 ? (
+        <Message>There is no product</Message>
       ) : (
         <>
+          <Row>
+            <TopProducts />
+          </Row>
+          <div className="d-flex justify-content-between mt-4">
+            <h1>Latest products</h1>
+            <Search searchVal={searchVal} search={debouncedSetSearch} />
+          </div>
           <Row>
             {products.map((product) => (
               <Col
@@ -59,6 +86,10 @@ const HomeScreen = () => {
               />
             </Col>
           </Row>
+          <Seo
+            title="Homepage | My Shop"
+            description="Find the best products on our homepage."
+          />
         </>
       )}
     </>

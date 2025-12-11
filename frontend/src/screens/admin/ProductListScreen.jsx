@@ -18,7 +18,8 @@ const ProductListScreen = () => {
   const [toggleModal, setToggleModal] = useState(false);
   const [prodId, setProdId] = useState(null);
   const { data, isLoading, error } = useGetProductsQuery({
-    perPage: page || 1,
+    search: "",
+    page: page || 1,
     limit: 10,
   });
 
@@ -87,7 +88,7 @@ const ProductListScreen = () => {
       <Row>
         <Col md={12}>
           <div className="container mt-4">
-            {!products && products.length === 0 ? (
+            {!products || products.length === 0 ? (
               <Message>There are no products</Message>
             ) : (
               <Table responsive striped bordered hover>
@@ -138,13 +139,15 @@ const ProductListScreen = () => {
         </Col>
       </Row>
       <Row>
-        <Col md={12} className="d-flex gap-4 justify-content-center">
-          <Paggination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            changeCurrentPage={changeCurrentPage}
-          />
-        </Col>
+        {products && products.length > 0 && (
+          <Col md={12} className="d-flex gap-4 justify-content-center">
+            <Paggination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              changeCurrentPage={changeCurrentPage}
+            />
+          </Col>
+        )}
       </Row>
       <DeleteModal
         updateToggle={toggleDeleteModal}

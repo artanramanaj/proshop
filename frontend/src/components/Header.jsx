@@ -1,16 +1,9 @@
-import React, { useEffect } from "react";
 import { Badge, Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
-import { LinkContainer } from "react-router-bootstrap";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
-import {
-  Link,
-  useLocation,
-  useSearchParams,
-  useNavigate,
-} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const Header = () => {
   const cartStore = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
@@ -20,7 +13,7 @@ const Header = () => {
     0
   );
   const navigate = useNavigate();
-  const [logout, { isLoading }] = useLogoutMutation();
+  const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
 
   const logoutFunc = async () => {

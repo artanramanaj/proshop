@@ -26,7 +26,7 @@ const Profile = () => {
     error: mineError,
   } = useGetMyOrdersQuery(
     {
-      perPage: page || 1,
+      page: page || 1,
       limit: 5,
     },
     {

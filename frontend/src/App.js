@@ -9,7 +9,7 @@ const App = () => {
     <>
       <Header />
       <main className="py-3">
-        <Container>
+        <Container className="min-vh-100  ">
           <Outlet />
         </Container>
       </main>

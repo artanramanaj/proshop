@@ -81,7 +81,20 @@ export const getOrderById = asyncHandler(async (req, res) => {
 // Put api/orders/:id
 // @ACCESS Auth usser
 export const updateOrderToPaid = asyncHandler(async (req, res) => {
-  res.status(200).json("update order to paid");
+  const { id } = req.params;
+  const order = await Order.findByIdAndUpdate(
+    id,
+    { isPaid: true },
+    {
+      new: true,
+    }
+  );
+  if (order) {
+    res.status(200).json({ message: "order has been paid", order });
+  } else {
+    res.status(404);
+    throw new Error("Order does not exist");
+  }
 });
 
 // @DESC update order to delivered
@@ -96,12 +109,11 @@ export const updateOrderToDelivered = asyncHandler(async (req, res) => {
       new: true,
     }
   );
-  console.log("order", order);
-  res.status(200).json(order);
+  res.status(200).json({ message: "order has been delivered", order });
 });
 
-// @DESC update order to delivered
-// Get api/orders/:id/deliver
+// @DESC get all orders
+// Get api/orders/
 // @ACCESS Admin
 export const getOrders = asyncHandler(async (req, res) => {
   let page = parseInt(req.query.page) || 1;

@@ -30,6 +30,7 @@ import ProductListScreen from "./screens/admin/ProductListScreen";
 import EditProductScreen from "./screens/admin/EditProductScreen";
 import UserListScreen from "./screens/admin/UserListScreen";
 import EditUserScreen from "./screens/admin/EditUserScreen";
+import { HeadProvider } from "react-head";
 import "react-toastify/dist/ReactToastify.css";
 
 const router = createBrowserRouter(
@@ -63,9 +64,11 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <HeadProvider>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </HeadProvider>
     <ToastContainer
       position="top-right"
       autoClose={3000}

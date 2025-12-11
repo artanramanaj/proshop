@@ -18,7 +18,7 @@ const UserListScreen = () => {
   const [toggleModal, setToggleModal] = useState(false);
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useGetUsersQuery({
-    perPage: page || 1,
+    page: page || 1,
     limit: 10,
   });
 
@@ -124,13 +124,15 @@ const UserListScreen = () => {
         </Col>
       </Row>
       <Row>
-        <Col md={12} className="d-flex gap-4 justify-content-center">
-          <Paggination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            changeCurrentPage={changeCurrentPage}
-          />
-        </Col>
+        {users && users.length > 0 && (
+          <Col md={12} className="d-flex gap-4 justify-content-center">
+            <Paggination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              changeCurrentPage={changeCurrentPage}
+            />
+          </Col>
+        )}
       </Row>
       <DeleteModal
         toggleModal={toggleModal}

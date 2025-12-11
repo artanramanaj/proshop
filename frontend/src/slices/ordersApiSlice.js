@@ -14,16 +14,21 @@ const ordersApiSlice = apiSlice.injectEndpoints({
       query: (id) => `${ORDERS_URL}/${id}`,
     }),
     getMyOrders: build.query({
-      query: ({ perPage, limit }) =>
-        `${ORDERS_URL}/mine/?page=${perPage}&limit=${limit}`,
+      query: ({ page, limit }) =>
+        `${ORDERS_URL}/mine/?page=${page}&limit=${limit}`,
     }),
     getOrders: build.query({
-      query: ({ perPage, limit }) =>
-        `${ORDERS_URL}/?page=${perPage}&limit=${limit}`,
+      query: ({ page, limit }) => `${ORDERS_URL}/?page=${page}&limit=${limit}`,
     }),
     markDeliver: build.mutation({
       query: (id) => ({
         url: `${ORDERS_URL}/${id}/deliver`,
+        method: "PUT",
+      }),
+    }),
+    markPaid: build.mutation({
+      query: (id) => ({
+        url: `${ORDERS_URL}/${id}/pay`,
         method: "PUT",
       }),
     }),
@@ -38,4 +43,5 @@ export const {
   useGetOrderQuery,
   useGetMyOrdersQuery,
   useGetOrdersQuery,
+  useMarkPaidMutation,
 } = ordersApiSlice;
