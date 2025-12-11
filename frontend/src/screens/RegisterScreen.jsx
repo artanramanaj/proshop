@@ -1,5 +1,5 @@
 import { Form, Button, Row, Col } from "react-bootstrap";
-import { Link, useNavigate, useNavigation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import FormContainer from "../components/FormContainer";
 import { useRegisterMutation } from "../slices/usersApiSlice";
 import { toast } from "react-toastify";
@@ -9,7 +9,7 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const [register, { isLoading }] = useRegisterMutation();
+  const [register] = useRegisterMutation();
 
   const userRegister = async (e) => {
     e.preventDefault();

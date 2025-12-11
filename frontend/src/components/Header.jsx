@@ -4,6 +4,7 @@ import { useLogoutMutation } from "../slices/usersApiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 const Header = () => {
   const cartStore = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
@@ -22,7 +23,7 @@ const Header = () => {
       dispatch(setCredentials(null));
       navigate("/login");
     } catch (error) {
-      console.log("check the error", error);
+      toast.error(error?.data?.message);
     }
   };
 

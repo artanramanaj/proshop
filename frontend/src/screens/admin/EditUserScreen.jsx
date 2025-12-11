@@ -39,7 +39,7 @@ const EditUserScreen = () => {
       toast.success(res.message);
       navigate("/admin/userlist");
     } catch (error) {
-      console.log("error", error);
+      toast.error(error?.data?.message);
     }
   };
   if (isLoading || updateUserLoading) return <Loader />;

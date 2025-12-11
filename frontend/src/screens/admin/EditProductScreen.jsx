@@ -37,7 +37,6 @@ const EditProductScreen = () => {
         description,
       };
       const result = await updateProduct({ id, data: body }).unwrap();
-      console.log("check the result here", result);
       toast.success(result.message);
       navigate("/admin/productlist");
     } catch (error) {
@@ -63,10 +62,9 @@ const EditProductScreen = () => {
       formData.append("image", file);
       const res = await uploadImage(formData).unwrap();
       toast.success(res.message);
-      console.log("res", res.image);
       setImage(res.image);
     } catch (error) {
-      toast.success(error?.data?.message);
+      toast.error(error?.data?.message);
     }
   };
   if (isLoading || updateLoading || uploadLoading) return <Loader />;

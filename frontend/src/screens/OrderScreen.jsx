@@ -18,7 +18,6 @@ const Order = () => {
   const [markPaid, { isLoading: paidLoading, error: paidError }] =
     useMarkPaidMutation();
 
-  console.log("order", order);
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
   const { name, email, isAdmin } = userInfo;
   const markAsDelivered = async () => {

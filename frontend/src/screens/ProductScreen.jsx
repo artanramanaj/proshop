@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Message from "../components/Message.jsx";
 import {
@@ -40,11 +40,6 @@ const ProductScreen = () => {
   const { userInfo } = auth;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  useEffect(() => {
-    refetch();
-  }, []);
-
-  console.log("product", product);
 
   const submitReview = async (e) => {
     e.preventDefault();
@@ -59,7 +54,6 @@ const ProductScreen = () => {
       }).unwrap();
       toast.success(res.message);
     } catch (error) {
-      console.log("error", error);
       toast.error(error?.data?.message);
     }
   };

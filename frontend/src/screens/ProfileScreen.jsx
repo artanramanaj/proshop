@@ -12,7 +12,6 @@ import { useGetMyOrdersQuery } from "../slices/ordersApiSlice";
 import Paggination from "../components/Paggination";
 const Profile = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  console.log("userInfo", userInfo);
   const [fullName, setFullName] = useState(userInfo.name);
   const [email, setEmail] = useState(userInfo.email);
   const [password, setPassword] = useState(null);
@@ -36,7 +35,6 @@ const Profile = () => {
   const mineOrders = data?.orders || [];
   const currentPage = data?.currentPage || 1;
   const totalPages = data?.totalPages || 1;
-  console.log("mineOrders", mineOrders);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();

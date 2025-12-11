@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 const TopProducts = () => {
   const { data, isLoading, error } = useGetTopProductsQuery();
   const products = data?.products || [];
-  console.log("products", products);
   if (isLoading) return <Loader />;
   if (error)
     return (

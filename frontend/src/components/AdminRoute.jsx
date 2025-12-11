@@ -3,7 +3,6 @@ import { Outlet, Navigate } from "react-router-dom";
 
 const AdminRoute = () => {
   const { userInfo } = useSelector((state) => state.auth);
-  console.log(userInfo);
   return userInfo && userInfo.isAdmin ? (
     <Outlet />
   ) : (

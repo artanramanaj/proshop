@@ -21,7 +21,6 @@ const OrdersListScreen = () => {
   const orders = data?.orders || [];
   const currentPage = data?.currentPage || 1;
   const totalPages = data?.totalPages || 1;
-  console.log("orders", orders);
   const handleDetails = (id) => {
     navigate(`/order/${id}`);
   };

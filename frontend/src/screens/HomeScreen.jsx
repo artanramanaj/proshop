@@ -31,7 +31,6 @@ const HomeScreen = () => {
     page: page || 1,
     limit: 8,
   });
-  console.log(data);
 
   const products = data?.products || [];
   const currentPage = data?.currentPage || 1;

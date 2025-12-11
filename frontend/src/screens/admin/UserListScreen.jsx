@@ -26,7 +26,6 @@ const UserListScreen = () => {
   const currentPage = data?.currentPage || 1;
   const totalPages = data?.totalPages || 1;
 
-  console.log("users", data);
   const [removeUser, { isLoading: removeUserLoading, error: removeUserError }] =
     useRemoveUserMutation();
 
@@ -42,7 +41,6 @@ const UserListScreen = () => {
   const deleteUser = async (id) => {
     try {
       const result = await removeUser(id).unwrap();
-      console.log("res", result);
       toast.success(result.message);
       setToggleModal(false);
     } catch (error) {

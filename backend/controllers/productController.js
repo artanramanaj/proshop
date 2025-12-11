@@ -86,7 +86,6 @@ export const editProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, price, image, brand, category, countInStock, description } =
     req.body;
-  console.log("check the id", id);
   let updateProduct = await Product.findOneAndUpdate(
     { _id: id },
     {
